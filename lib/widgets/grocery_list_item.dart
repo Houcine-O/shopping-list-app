@@ -17,6 +17,5 @@ class GroceryListItem extends StatelessWidget {
       title: Text(groceryListItem.name),
       trailing: Text('${groceryListItem.quantity}'),
     );
-    ;
   }
 }
