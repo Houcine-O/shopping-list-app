@@ -19,19 +19,26 @@ class _NewItemScreenState extends State<NewItemScreen> {
   var _enteredQty = 1;
   var _selectedCategory = categories[Categories.other];
 
-  void _addItem() {
+  void _addItem() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final url = Uri.https(
           'shopping-list-flutter-training-default-rtdb.firebaseio.com',
           'shopping-list.json');
-      http.post(url,
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(
+          {
             'name': _enteredName,
             'quantity': _enteredQty,
             'category': _selectedCategory!.name
-          }));
+          },
+        ),
+      );
+
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
     }
   }
 
