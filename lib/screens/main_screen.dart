@@ -39,7 +39,7 @@ class _MainScreenState extends State<MainScreen> {
       body: _groceryItems.isEmpty
           ? const Center(
               child: Text(
-              'No items for the moment',
+              'No items added yet',
               style: TextStyle(
                 fontSize: 22,
               ),
@@ -47,7 +47,15 @@ class _MainScreenState extends State<MainScreen> {
           : ListView.builder(
               itemCount: _groceryItems.length,
               itemBuilder: (_, index) {
-                return GroceryListItem(groceryListItem: _groceryItems[index]);
+                return Dismissible(
+                    onDismissed: (direction) {
+                      setState(() {
+                        _groceryItems.remove(_groceryItems[index]);
+                      });
+                    },
+                    key: ValueKey(_groceryItems[index].id),
+                    child:
+                        GroceryListItem(groceryListItem: _groceryItems[index]));
               }),
     );
   }

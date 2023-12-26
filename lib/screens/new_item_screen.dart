@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:shopping_list_app/data/categories.dart';
 import 'package:shopping_list_app/models/category_model.dart';
-import 'package:shopping_list_app/models/grocery_item.dart';
 
 class NewItemScreen extends StatefulWidget {
   const NewItemScreen({super.key});
@@ -20,11 +22,16 @@ class _NewItemScreenState extends State<NewItemScreen> {
   void _addItem() {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      Navigator.of(context).pop(GroceryItem(
-          id: DateTime.now().toString(),
-          name: _enteredName,
-          quantity: _enteredQty,
-          category: _selectedCategory!));
+      final url = Uri.https(
+          'shopping-list-flutter-training-default-rtdb.firebaseio.com',
+          'shopping-list.json');
+      http.post(url,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'name': _enteredName,
+            'quantity': _enteredQty,
+            'category': _selectedCategory!.name
+          }));
     }
   }
 
