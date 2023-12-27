@@ -28,29 +28,32 @@ class _MainScreenState extends State<MainScreen> {
     final url = Uri.https(
         'shopping-list-flutter-training-default-rtdb.firebaseio.com',
         'shopping-list.json');
-    final List<GroceryItem> _tempData = [];
+    final List<GroceryItem> tempData = [];
     final response = await http.get(url);
     final Map<String, dynamic> itemsJson = json.decode(response.body);
     for (final item in itemsJson.entries) {
       final category = categories.entries
           .firstWhere((cat) => cat.value.name == item.value['category'])
           .value;
-      _tempData.add(GroceryItem(
+      tempData.add(GroceryItem(
           id: item.key,
           name: item.value['name'],
           quantity: item.value['quantity'],
           category: category));
     }
     setState(() {
-      _groceryItems = _tempData;
+      _groceryItems = tempData;
     });
   }
 
   void _addItemNavigation() async {
-    await Navigator.of(context).push(
+    final returnItem = await Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => const NewItemScreen()),
     );
-    _loadData();
+
+    setState(() {
+      _groceryItems.add(returnItem);
+    });
   }
 
   @override

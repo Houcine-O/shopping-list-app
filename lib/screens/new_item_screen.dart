@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:shopping_list_app/data/categories.dart';
 import 'package:shopping_list_app/models/category_model.dart';
+import 'package:shopping_list_app/models/grocery_item.dart';
 
 class NewItemScreen extends StatefulWidget {
   const NewItemScreen({super.key});
@@ -37,8 +38,14 @@ class _NewItemScreenState extends State<NewItemScreen> {
         ),
       );
 
+      final responseData = json.decode(response.body);
+
       if (!context.mounted) return;
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(GroceryItem(
+          id: responseData['name'],
+          name: _enteredName,
+          quantity: _enteredQty,
+          category: _selectedCategory!));
     }
   }
 
