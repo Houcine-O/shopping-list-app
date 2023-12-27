@@ -30,38 +30,41 @@ class _MainScreenState extends State<MainScreen> {
     final url = Uri.https(
         'shopping-list-flutter-training-default-rtdb.firebaseio.com',
         'shopping-list.json');
+    try {
+      final response = await http.get(url);
+      if (response.body == 'null') {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
-    final response = await http.get(url);
-    if (response.body == 'null') {
+      final List<GroceryItem> tempData = [];
+      final Map<String, dynamic> itemsJson = json.decode(response.body);
+
+      if (response.statusCode >= 400) {
+        setState(() {
+          _err = 'Failed to fetch data, please try again later.';
+        });
+      }
+
+      for (final item in itemsJson.entries) {
+        final category = categories.entries
+            .firstWhere((cat) => cat.value.name == item.value['category'])
+            .value;
+        tempData.add(GroceryItem(
+            id: item.key,
+            name: item.value['name'],
+            quantity: item.value['quantity'],
+            category: category));
+      }
       setState(() {
+        _groceryItems = tempData;
         _isLoading = false;
       });
-      return;
+    } catch (expt) {
+      _err = 'Something went wrong! please try again later.';
     }
-
-    final List<GroceryItem> tempData = [];
-    final Map<String, dynamic> itemsJson = json.decode(response.body);
-
-    if (response.statusCode >= 400) {
-      setState(() {
-        _err = 'Failed to fetch data, please try again later.';
-      });
-    }
-
-    for (final item in itemsJson.entries) {
-      final category = categories.entries
-          .firstWhere((cat) => cat.value.name == item.value['category'])
-          .value;
-      tempData.add(GroceryItem(
-          id: item.key,
-          name: item.value['name'],
-          quantity: item.value['quantity'],
-          category: category));
-    }
-    setState(() {
-      _groceryItems = tempData;
-      _isLoading = false;
-    });
   }
 
   void _removeItem(GroceryItem item) async {
