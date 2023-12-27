@@ -30,16 +30,17 @@ class _MainScreenState extends State<MainScreen> {
     final url = Uri.https(
         'shopping-list-flutter-training-default-rtdb.firebaseio.com',
         'shopping-list.json');
-    final List<GroceryItem> tempData = [];
-    final response = await http.get(url);
-    final Map<String, dynamic> itemsJson = json.decode(response.body);
 
+    final response = await http.get(url);
     if (response.body == 'null') {
       setState(() {
         _isLoading = false;
       });
       return;
     }
+
+    final List<GroceryItem> tempData = [];
+    final Map<String, dynamic> itemsJson = json.decode(response.body);
 
     if (response.statusCode >= 400) {
       setState(() {
